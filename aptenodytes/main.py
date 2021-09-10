@@ -953,3 +953,21 @@ def hsqcc_stripplot(molecule: Any,
                     transform=ax.get_xaxis_transform())
     pg.style_axes(ax, "plot")
     return plt.gcf(), ax
+
+
+def make_colorbar(cs, ax):
+    """
+    Quickly add a colour bar to a contour plot or similar.
+
+    You can get the first argument as the return value of contour() or
+    contourf(). imshow() also works. The second argument is the Axes.
+    """
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.1)
+    plt.colorbar(cs, cax=cax)
+
+
+def enzip(*iterables):
+    for i, t in enumerate(zip(*iterables)):
+        yield (i, *t)
