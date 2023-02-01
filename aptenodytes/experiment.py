@@ -5,6 +5,7 @@ from typing import List, Tuple, Optional, Sequence, Any, Union, Generator
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import penguins as pg
 from penguins import dataset as ds  # for type annotations
 
@@ -35,22 +36,30 @@ class Experiment:
 
     def show_peaks(self, ax=None, **kwargs) -> None:
         """
-        Draw red crosses corresponding to each peak on an existing Axes
-        instance. Useful for checking whether the peaks actually line up with
-        the spectrum.
+        Draw red rectangles corresponding to each peak's integration region on
+        an existing Axes instance. Useful for checking whether the peaks
+        actually line up with the spectrum / whether the top of the peak is
+        within the integration region.
 
         If 'ax' is not provided, defaults to currently active Axes.
 
-        Other kwargs are passed to ax.scatter().
+        Other kwargs are passed to matplotlib.patches.Rectangle().
         """
         if ax is None:
             ax = plt.gca()
 
-        scatter_kwargs = {"color": pg.color_palette("bright")[3],
-                          "marker": "+", "zorder": 2}
-        scatter_kwargs.update(kwargs)
-        ax.scatter([p[1] for p in self.peaks], [p[0] for p in self.peaks],
-                   **scatter_kwargs)
+        rect_kwargs = {"edgecolor": pg.color_palette("bright")[3],
+                       "facecolor": None,
+                       "fill": False,
+                       "zorder": 2}
+        rect_kwargs.update(kwargs)
+        
+        for p in self.peaks:
+            rect = Rectangle(xy=(p[1] - self.margin[1], p[0] - self.margin[0]),
+                             height=2*self.margin[0],
+                             width=2*self.margin[1],
+                             **rect_kwargs)
+            ax.add_patch(rect)
 
 
     @property
@@ -82,7 +91,7 @@ class Experiment:
 
 class Hmbc(Experiment):
     """
-    For 13C HMBC experiments. Just call hmbc(peaks, margin) to instantiate.
+    For 13C or 15N HMBC experiments. Just call Hmbc(peaks, margin) to instantiate.
     """
     default_margin = (0.5, 0.02)
 
@@ -91,7 +100,7 @@ class NHsqc(Experiment):
     """
     For 15N HSQC experiments. Just call nhsqc(peaks, margin) to instantiate.
     """
-    default_margin = (0.4, 0.05)
+    default_margin = (1, 0.1)
 
 
 class Hsqc(Experiment):
