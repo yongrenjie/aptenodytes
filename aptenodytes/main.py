@@ -563,7 +563,8 @@ def generic_stripplot(experiment: Any,
     if legend:
         ax.legend()
     else:
-        ax.get_legend().remove()
+        if ax.get_legend() is not None:
+            ax.get_legend().remove()
     pg.style_axes(ax, "plot")
     return plt.gcf(), ax
 
@@ -656,8 +657,8 @@ def make_colorbar(cs, ax):
     plt.colorbar(cs, cax=cax)
 
 
-def enzip(*iterables) -> Generator[tuple, None, None]:
-    for i, t in enumerate(zip(*iterables)):
+def enzip(*iterables, start=0) -> Generator[tuple, None, None]:
+    for i, t in enumerate(zip(*iterables), start=start):
         yield (i, *t)
 
 
@@ -671,6 +672,28 @@ def subplots_2d_32(width=12, height=8):
                 fig.add_subplot(gspec[0:1, 4:6]),
                 fig.add_subplot(gspec[1:2, 1:3]),
                 fig.add_subplot(gspec[1:2, 3:5])))
+    return fig, axs
+
+# matplotlib 2+1 grid layout
+def subplots_2d_21(width=8, height=8):
+    fig = pg.figure(figsize=(width, height))
+    gspec = gs.GridSpec(ncols=4, nrows=2, figure=fig)
+    axs = []
+    axs.extend((fig.add_subplot(gspec[0:1, 0:2]),
+                fig.add_subplot(gspec[0:1, 2:4]),
+                fig.add_subplot(gspec[1:2, 1:3])))
+    return fig, axs
+
+# matplotlib 2+2+1 grid layout
+def subplots_2d_221(width=8, height=12):
+    fig = pg.figure(figsize=(width, height))
+    gspec = gs.GridSpec(ncols=4, nrows=3, figure=fig)
+    axs = []
+    axs.extend((fig.add_subplot(gspec[0:1, 0:2]),
+                fig.add_subplot(gspec[0:1, 2:4]),
+                fig.add_subplot(gspec[1:2, 0:2]),
+                fig.add_subplot(gspec[1:2, 2:4]),
+                fig.add_subplot(gspec[2:3, 1:3])))
     return fig, axs
 
 def subplots2d(nrows=1, ncols=1, scale=None, **kwargs):
@@ -720,7 +743,9 @@ def thesis() -> None:
 
 # Convenience functions
 def label_axes_def(axs, **kwargs):
-    return pg.label_axes(axs, fstr='({})', fontweight='semibold', fontsize=10, **kwargs)
+    fontsize = kwargs.pop('fontsize', 10)
+    return pg.label_axes(axs, fstr='({})', fontweight='semibold',
+                         fontsize=fontsize, **kwargs)
 
 def show():
     return plt.show()
