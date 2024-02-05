@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="aptenodytes",
-    version="0.0.1",
+    version="0.1.0",
     author="Jonathan Yong",
     author_email="yongrenjie@gmail.com",
     description=("Personal code which extends the features in the penguins"
