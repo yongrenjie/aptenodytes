@@ -579,6 +579,7 @@ def sscc_stripplot(molecule: Any,
                    title: str = "",
                    show_averages: bool = True,
                    legend: bool = True,
+                   edited: list[int] = None,
                    ncol: int = 2,
                    loc: str = "upper center",
                    palette: Optional[Any] = sns.color_palette("deep"),
@@ -590,10 +591,17 @@ def sscc_stripplot(molecule: Any,
         experiments = [molecule.hsqc, molecule.hsqc, molecule.cosy]
     if len(experiments) != 3:
         raise ValueError('Three experiments must be supplied')
+    # edited should be a list of experiment indices for which we want to pass
+    # edited=True to rel_ints_df()
+    def get_kwargs(i):
+        if edited is not None and i in edited:
+            return {'edited': True}
+        else:
+            return {}
     rel_ints_dfs = [expt.rel_ints_df(dataset=ds, ref_dataset=ref_ds,
-                                     label=label)
-                    for (ds, ref_ds, expt, label)
-                    in zip(datasets, ref_datasets, experiments, expt_labels)]
+                                     label=label, **get_kwargs(i))
+                    for (i, ds, ref_ds, expt, label)
+                    in enzip(datasets, ref_datasets, experiments, expt_labels)]
     # Add an extra label for the hue parameter
     for i, df in enumerate(rel_ints_dfs):
         df['category'] = str(i)
