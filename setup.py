@@ -1,8 +1,8 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="aptenodytes",
-    version="0.1.0",
+    version="0.2.0",
     author="Jonathan Yong",
     author_email="yongrenjie@gmail.com",
     description=("Personal code which extends the features in the penguins"
@@ -16,7 +16,8 @@ setup(
     ],
     python_requires='>=3.7',
     install_requires=[
-        "penguins"
+        "penguins",
+        "seaborn == 0.13.*"
     ]
 
 )

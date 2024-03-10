@@ -600,7 +600,9 @@ def sscc_stripplot(molecule: Any,
     all_dfs = pd.concat(rel_ints_dfs)
 
     # Calculate the average integrals by peak type
-    avgd_ints = pd.concat((df.mean() for df in rel_ints_dfs), axis=1)
+    avgd_ints = pd.concat((
+        df.mean(numeric_only=True) for df in rel_ints_dfs
+    ), axis=1)
 
     # Get currently active axis if none provided
     if ax is None:
